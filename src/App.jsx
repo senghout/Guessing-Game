@@ -12,6 +12,7 @@ export default function App() {
   const [guessedNumber, setGuessedNumber] = useState(0);
   const [bgColor, setBgColor] = useState('bg-slate-950');
   const [isRevealed, setIsRevealed] = useState(false);
+  const [visitorCount, setVisitorCount] = useState("...");
 
   const GAME_MODES = [
     { label: '1 to 50', maxNum: 50, maxBits: 6 },
@@ -30,7 +31,7 @@ export default function App() {
     
     fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors', // This is required to skip browser security blocks when sending to Google
+      mode: 'no-cors', // Required for Google Sheets
       headers: {
         'Content-Type': 'text/plain',
       },
@@ -38,9 +39,25 @@ export default function App() {
     }).catch(err => console.log("Tracking error:", err));
   };
 
-  // Track when a visitor first loads the page
+  // Track when a visitor first loads the page & fetch the total count
   useEffect(() => {
+    // 1. Log this new visitor to the sheet
     trackEvent("Visitor Landed");
+
+    // 2. Fetch the total visitor count from the sheet
+    if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== "YOUR_GOOGLE_SCRIPT_URL_HERE") {
+      fetch(GOOGLE_SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.count !== undefined) {
+            setVisitorCount(data.count);
+          }
+        })
+        .catch(err => {
+          console.log("Error fetching count:", err);
+          setVisitorCount("Offline");
+        });
+    }
   }, []);
 
   // Pre-generate the cards (arrays of numbers)
@@ -266,13 +283,12 @@ export default function App() {
             </a>
           </div>
 
-          {/* Visitor Counter Badge */}
-          <div className="pt-6 opacity-70 hover:opacity-100 transition-opacity duration-300">
-            <img 
-              src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=khengsenghout-guessing-game&count_bg=%234F46E5&title_bg=%230F172A&icon=&icon_color=%23E7E7E7&title=Visitors&edge_flat=true" 
-              alt="Visitor Count" 
-              className="h-6"
-            />
+          {/* New Live Visitor Counter Connected to Google Sheets */}
+          <div className="pt-6 opacity-80 hover:opacity-100 transition-opacity duration-300">
+            <div className="bg-slate-900/80 backdrop-blur border border-indigo-500/30 px-5 py-2.5 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(79,70,229,0.15)]">
+              <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Total Visits</span>
+              <span className="text-indigo-400 font-mono font-bold text-xl drop-shadow-md">{visitorCount}</span>
+            </div>
           </div>
         </footer>
 
