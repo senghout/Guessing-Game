@@ -39,12 +39,8 @@ export default function App() {
     }).catch(err => console.log("Tracking error:", err));
   };
 
-  // Track when a visitor first loads the page & fetch the total count
+  // Fetch the total visitor count from the sheet on load
   useEffect(() => {
-    // 1. Log this new visitor to the sheet
-    trackEvent("Visitor Landed");
-
-    // 2. Fetch the total visitor count from the sheet
     if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== "YOUR_GOOGLE_SCRIPT_URL_HERE") {
       fetch(GOOGLE_SCRIPT_URL)
         .then(res => res.json())
@@ -81,9 +77,7 @@ export default function App() {
     setGameState('playing');
     setBgColor('bg-slate-950');
     setIsRevealed(false);
-    
-    // Track that they started a game
-    trackEvent(`Started Game (${selectedMode.label})`);
+    // Note: Removed the "Started Game" tracking here to prevent double-counting
   };
 
   const resetToStart = () => {
@@ -111,8 +105,8 @@ export default function App() {
 
   const handleReveal = () => {
     setIsRevealed(true);
-    // Track the final result
-    trackEvent("Game Completed - Guessed Number:", guessedNumber);
+    // Send exactly ONE tracking event for the whole game so the counter goes up by 1
+    trackEvent("Game Played", `Range: ${selectedMode.label} | Guessed: ${guessedNumber}`);
   };
 
   return (
@@ -294,7 +288,7 @@ export default function App() {
           {/* New Live Visitor Counter Connected to Google Sheets */}
           <div className="pt-6 opacity-80 hover:opacity-100 transition-opacity duration-300">
             <div className="bg-slate-900/80 backdrop-blur border border-indigo-500/30 px-5 py-2.5 rounded-xl flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(79,70,229,0.15)]">
-              <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Total Visits</span>
+              <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Total Plays</span>
               <span className="text-indigo-400 font-mono font-bold text-xl drop-shadow-md">{visitorCount}</span>
             </div>
           </div>
