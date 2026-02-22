@@ -4,5 +4,5 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/guessing-game/', // <-- IMPORTANT: This must match your GitHub repository name!
+  base: '/Guessing-Game/', // <-- IMPORTANT: This must match your GitHub repository name!
 })
