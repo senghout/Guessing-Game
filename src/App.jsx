@@ -86,6 +86,14 @@ export default function App() {
     trackEvent(`Started Game (${selectedMode.label})`);
   };
 
+  const resetToStart = () => {
+    setGameState('start');
+    setStep(0);
+    setGuessedNumber(0);
+    setBgColor('bg-slate-950');
+    setIsRevealed(false);
+  };
+
   const handleAnswer = (isYes) => {
     setBgColor(isYes ? 'bg-emerald-950' : 'bg-rose-950');
     setTimeout(() => setBgColor('bg-slate-950'), 400);
@@ -252,7 +260,7 @@ export default function App() {
                 )}
 
                 <button
-                  onClick={startGame}
+                  onClick={resetToStart}
                   className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 px-8 rounded-full border border-slate-700 transition-all duration-200 hover:scale-105 active:scale-95"
                 >
                   <RotateCcw className="w-5 h-5" />
